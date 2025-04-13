@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Analisis Statistik Pemain Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">📊 Analisis Statistik Gamers Indonesia</h1>
+        
+        <!-- Section 1: Game Selection -->
+        <div class="section fade-in">
+            <div class="section-header">
+                <h2><i class="fas fa-gamepad icon"></i> Pilih Game</h2>
+            </div>
+            <div class="section-content">
+                <form method="POST" class="game-form">
+                    <div class="form-group">
+                        <label for="game" class="form-label">Game yang ingin dianalisis:</label>
+                        <select name="game" id="game" required>
+                            <option value="">--Pilih Game--</option>
+                            <option value="Free Fire" {% if game == 'Free Fire' %}selected{% endif %}>Free Fire</option>
+                            <option value="PUBG" {% if game == 'PUBG' %}selected{% endif %}>PUBG</option>
+                            <option value="Mobile Legends" {% if game == 'Mobile Legends' %}selected{% endif %}>Mobile Legends</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-search"></i> Analisis
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if players %}
+        <!-- Section 2: Player Data Table -->
+        <div class="section fade-in delay-1">
+            <div class="section-header">
+                <h2><i class="fas fa-users icon"></i> Data Pemain {{ game }} (Total: {{ stats.total }})</h2>
+            </div>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Lokasi</th>
+                                <th>Gender</th>
+                                <th>Usia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in players %}
+                            <tr>
+                                <td>{{ p.no }}</td>
+                                <td>{{ p.nama }}</td>
+                                <td><i class="fas fa-map-marker-alt"></i> {{ p.lokasi }}</td>
+                                <td>
+                                    {% if p.gender == 'Laki-laki' %}
+                                    <i class="fas fa-mars"></i>
+                                    {% else %}
+                                    <i class="fas fa-venus"></i>
+                                    {% endif %}
+                                    {{ p.gender }}
+                                </td>
+                                <td>{{ p.usia }} tahun</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Statistical Description -->
+        <div class="section fade-in delay-2">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar icon"></i> Deskripsi Statistik</h2>
+            </div>
+            <div class="section-content">
+                <!-- Sub Section: Data Set -->
+                <div class="subsection">
+                    <h3 class="subsection-title">
+                        <i class="fas fa-database"></i> Data Set
+                    </h3>
+                    <div class="data-set-info">
+                        <div class="data-set-item">
+                            <span class="data-set-label">Jumlah Data:</span>
+                            <span class="data-set-value">{{ stats.total }} pemain</span>
+                        </div>
+                        <div class="data-set-item">
+                            <span class="data-set-label">Data Usia Terurut:</span>
+                            <div class="sorted-data">
+                                {{ stats.sorted_ages }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sub Section: Basic Statistics -->
+                <div class="subsection">
+                    <h3 class="subsection-title">
+                        <i class="fas fa-calculator"></i> Statistik Dasar
+                    </h3>
+                    <div class="stats-container">
+                        <!-- Group 1: Central Tendency -->
+                        <div class="stats-group">
+                            <h4 class="stats-group-title"><i class="fas fa-bullseye"></i> Ukuran Pemusatan</h4>
+                            <div class="stats-list">
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-calculator"></i> Rata-rata
+                                    </div>
+                                    <div class="stats-value">{{ stats.mean }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-sort-amount-down"></i> Median
+                                    </div>
+                                    <div class="stats-value">{{ stats.median }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-poll"></i> Modus
+                                    </div>
+                                    <div class="stats-value">{{ stats.mode }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Group 2: Quartiles -->
+                        <div class="stats-group">
+                            <h4 class="stats-group-title"><i class="fas fa-th-large"></i> Kuartil</h4>
+                            <div class="stats-list">
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-chart-line"></i> Q1 (25%)
+                                    </div>
+                                    <div class="stats-value">{{ stats.q1 }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-chart-line"></i> Q2 (50%)
+                                    </div>
+                                    <div class="stats-value">{{ stats.q2 }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-chart-line"></i> Q3 (75%)
+                                    </div>
+                                    <div class="stats-value">{{ stats.q3 }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-arrows-alt-h"></i> IQR
+                                    </div>
+                                    <div class="stats-value">{{ stats.iqr }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Group 3: Dispersion -->
+                        <div class="stats-group">
+                            <h4 class="stats-group-title"><i class="fas fa-expand-arrows-alt"></i> Ukuran Dispersi</h4>
+                            <div class="stats-list">
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-baby"></i> Minimum
+                                    </div>
+                                    <div class="stats-value">{{ stats.min }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-user-graduate"></i> Maksimum
+                                    </div>
+                                    <div class="stats-value">{{ stats.max }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-arrows-alt-h"></i> Range
+                                    </div>
+                                    <div class="stats-value">{{ stats.range }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-grip-lines"></i> Mid Range
+                                    </div>
+                                    <div class="stats-value">{{ stats.mid_range }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                                
+                                <div class="stats-item">
+                                    <div class="stats-label">
+                                        <i class="fas fa-random"></i> Std. Deviasi
+                                    </div>
+                                    <div class="stats-value">{{ stats.std_dev }}</div>
+                                    <div class="stats-unit">tahun</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="section fade-in delay-1">
+            <div class="section-content empty-state">
+                <i class="fas fa-chart-pie"></i>
+                <h3>Belum Ada Data</h3>
+                <p>Silakan pilih game untuk melihat analisis statistik pemain.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Simple script to enhance interactivity
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectElement = document.getElementById("game");
+            selectElement.addEventListener("change", function() {
+                selectElement.classList.add("selected");
+            });
+        });
+    </script>
+</body>
+</html>
