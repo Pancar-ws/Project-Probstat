@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Statistik Pemain Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Statistik Gamers</h1>
+    </header>
+    
+    <div class="container">
+        <h1 class="title">📊 Analisis Statistik Gamers Indonesia</h1>
+        
+        <!-- Form -->
+        <div class="card">
+            <h2><i class="fas fa-gamepad"></i> Pilih Game</h2>
+            <form method="POST">
+                <select name="game" id="game" required>
+                    <option value="">--Pilih Game--</option>
+                    <option value="Free Fire" {% if game == 'Free Fire' %}selected{% endif %}>Free Fire</option>
+                    <option value="PUBG" {% if game == 'PUBG' %}selected{% endif %}>PUBG</option>
+                    <option value="Mobile Legends" {% if game == 'Mobile Legends' %}selected{% endif %}>Mobile Legends</option>
+                </select>
+                <button type="submit" class="btn"><i class="fas fa-search"></i> Analisis</button>
+            </form>
+        </div>
+
+        {% if players %}
+        <!-- Players Table -->
+        <div class="card">
+            <h2><i class="fas fa-users"></i> Data Pemain {{ game }} ({{ stats.total }})</h2>
+            <table>
+                <tr><th>No</th><th>Nama</th><th>Lokasi</th><th>Gender</th><th>Usia</th></tr>
+                {% for p in players %}
+                <tr>
+                    <td>{{ p.no }}</td>
+                    <td>{{ p.nama }}</td>
+                    <td><i class="fas fa-map-marker-alt"></i> {{ p.lokasi }}</td>
+                    <td><i class="fas fa-{% if p.gender == 'Laki-laki' %}mars{% else %}venus{% endif %}"></i> {{ p.gender }}</td>
+                    <td>{{ p.usia }} tahun</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <h2><i class="fas fa-chart-bar"></i> Statistik</h2>
+            <p><strong>Data:</strong> {{ stats.sorted_ages }}</p>
+            
+            <div class="stats-grid">
+                <!-- Central Tendency -->
+                <div class="stat-box">
+                    <h3><i class="fas fa-bullseye"></i> Pemusatan</h3>
+                    <p><i class="fas fa-calculator"></i> Mean: {{ stats.mean }}</p>
+                    <p><i class="fas fa-sort"></i> Median: {{ stats.median }}</p>
+                    <p><i class="fas fa-poll"></i> Modus: {{ stats.mode }}</p>
+                </div>
+                
+                <!-- Quartiles -->
+                <div class="stat-box">
+                    <h3><i class="fas fa-th"></i> Kuartil</h3>
+                    <p><i class="fas fa-chart-line"></i> Q1: {{ stats.q1 }}</p>
+                    <p><i class="fas fa-chart-line"></i> Q2: {{ stats.q2 }}</p>
+                    <p><i class="fas fa-chart-line"></i> Q3: {{ stats.q3 }}</p>
+                    <p><i class="fas fa-arrows-alt-h"></i> IQR: {{ stats.iqr }}</p>
+                </div>
+                
+                <!-- Dispersion -->
+                <div class="stat-box">
+                    <h3><i class="fas fa-expand"></i> Dispersi</h3>
+                    <p><i class="fas fa-arrow-down"></i> Min: {{ stats.min }}</p>
+                    <p><i class="fas fa-arrow-up"></i> Max: {{ stats.max }}</p>
+                    <p><i class="fas fa-arrows-alt-h"></i> Range: {{ stats.range }}</p>
+                    <p><i class="fas fa-grip-lines"></i> Mid: {{ stats.mid_range }}</p>
+                    <p><i class="fas fa-random"></i> StdDev: {{ stats.std_dev }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-chart-pie"></i>
+            <h3>Belum Ada Data</h3>
+            <p>Silakan pilih game untuk melihat statistik.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
